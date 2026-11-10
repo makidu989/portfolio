@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a4c">
+  <title>나의 취업 포트폴리오 | Profile Studio</title>
+  <style>
+    :root { --navy:#102a4c; --navy2:#193c67; --blue:#2f6dc7; --ink:#203148; --muted:#6b7c91; --line:#dce5f0; --bg:#f2f5f9; --white:#fff; --radius:16px; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--bg); font-family:system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif; line-height:1.55; }
+    button,input,textarea { font:inherit; }
+    button { cursor:pointer; }
+    button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible { outline:3px solid #7ba8e9; outline-offset:2px; }
+    .topbar { background:var(--navy); color:#fff; padding:19px clamp(16px,3vw,44px); display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .brand-mark { display:grid; place-items:center; background:#fff; color:var(--navy); border-radius:12px; font-weight:900; width:43px; height:43px; letter-spacing:-1px; }
+    .brand strong { display:block; font-size:19px; letter-spacing:-.5px; }
+    .brand small { display:block; color:#bfd0e4; font-size:12px; }
+    .toolbar { display:flex; gap:8px; flex-wrap:wrap; }
+    .btn { display:inline-flex; justify-content:center; align-items:center; gap:7px; border:1px solid var(--line); border-radius:10px; background:#fff; color:var(--navy); font-weight:700; font-size:13px; padding:10px 13px; min-height:39px; transition:background .15s,transform .15s; }
+    .btn:hover { background:#e9f2ff; }
+    .btn:active { transform:translateY(1px); }
+    .btn.primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+    .btn.primary:hover { background:#245aab; }
+    .btn.ghost { background:transparent; color:#fff; border-color:#6e88a7; }
+    .btn.ghost:hover { background:#294767; }
+    .btn.danger { color:#9a3242; }
+    .btn.small { padding:7px 10px; min-height:32px; font-size:12px; }
+    .layout { width:min(1600px,100%); margin:auto; padding:23px clamp(12px,2vw,30px) 32px; display:grid; grid-template-columns:minmax(340px,470px) minmax(0,1fr); gap:22px; align-items:start; }
+    .panel { min-width:0; border:1px solid var(--line); background:#fff; border-radius:var(--radius); box-shadow:0 8px 28px rgba(21,47,78,.045); overflow:hidden; }
+    .panel-head { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:17px 21px; border-bottom:1px solid var(--line); }
+    .panel-head h2 { font-size:17px; margin:0; color:var(--navy); }
+    .panel-head p { margin:3px 0 0; color:var(--muted); font-size:12px; }
+    .editor-body { max-height:calc(100vh - 160px); overflow:auto; padding:0 20px 20px; }
+    .form-section { padding:22px 0; border-bottom:1px solid var(--line); }
+    .form-section:last-child { border:0; }
+    .section-title { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 0 15px; }
+    .section-title h3 { margin:0; color:var(--navy); font-size:15px; }
+    .section-title span { font-size:11px; color:var(--muted); }
+    .fields { display:grid; gap:12px; }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    label.field { display:block; min-width:0; font-size:12px; color:#52647b; font-weight:700; }
+    .field input,.field textarea { display:block; width:100%; margin-top:5px; padding:11px 12px; border:1px solid #d2deeb; border-radius:9px; color:var(--ink); background:#fbfcfe; font-size:13px; font-weight:400; }
+    .field textarea { resize:vertical; min-height:89px; line-height:1.6; }
+    .hint { font-size:11px; color:var(--muted); margin:7px 0 0; }
+    .photo-tools { display:flex; gap:14px; align-items:center; margin-bottom:15px; }
+    .photo-thumb { width:85px; height:103px; background:#e7edf5; color:#60748c; border-radius:10px; overflow:hidden; display:grid; place-items:center; flex:none; border:1px solid var(--line); font-size:12px; }
+    .photo-thumb img { width:100%; height:100%; object-fit:cover; }
+    .photo-actions { display:grid; gap:7px; }
+    .entry { padding:13px; border-radius:11px; background:#f7f9fc; border:1px solid var(--line); margin:0 0 10px; }
+    .entry-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .entry-head strong { font-size:12px; color:var(--navy); }
+    .entry .fields { gap:9px; }
+    .entry-actions { display:flex; gap:5px; }
+    .empty-editor { font-size:12px; color:var(--muted); padding:9px 0 16px; }
+    .preview-panel { position:sticky; top:16px; }
+    .preview-shell { overflow:auto; max-height:calc(100vh - 160px); padding:24px; background:#e8eef6; }
+    .resume { max-width:800px; margin:0 auto; min-height:980px; background:#fff; color:var(--ink); box-shadow:0 8px 35px rgba(27,49,80,.11); padding:45px 49px 56px; overflow-wrap:anywhere; }
+    .resume-cover { display:flex; align-items:center; justify-content:space-between; gap:28px; padding-bottom:25px; border-bottom:3px solid var(--navy); }
+    .eyebrow { margin:0 0 6px; font-size:11px; letter-spacing:2px; color:var(--blue); font-weight:800; }
+    .person-name { margin:0; font-size:35px; line-height:1.22; color:var(--navy); letter-spacing:-1.8px; }
+    .person-role { margin:10px 0 0; color:var(--navy2); font-size:17px; font-weight:750; }
+    .tagline { margin:10px 0 0; color:#687a90; font-size:13px; }
+    .portrait { flex:none; width:125px; height:150px; border-radius:11px; background:linear-gradient(135deg,#dae5f1,#edf3fa); display:grid; place-items:center; overflow:hidden; color:#8092a8; font-size:12px; }
+    .portrait img { width:100%; height:100%; object-fit:cover; }
+    .contact-line { display:flex; flex-wrap:wrap; gap:9px 18px; margin:17px 0 0; font-size:12px; color:#586e86; }
+    .contact-line a,.resume a { color:#245da6; text-decoration:underline; text-underline-offset:3px; }
+    .resume-section { margin-top:27px; break-inside:avoid; }
+    .resume-section h3 { font-size:14px; font-weight:850; letter-spacing:.4px; color:var(--navy); display:flex; gap:12px; align-items:center; margin:0 0 13px; }
+    .resume-section h3::after { content:""; height:1px; background:#dce5ef; flex:1; }
+    .summary-text { white-space:pre-line; font-size:13px; line-height:1.9; margin:0; }
+    .bullet-lines { margin:0; padding-left:18px; font-size:13px; line-height:1.8; }
+    .resume-item { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-top:14px; break-inside:avoid; }
+    .resume-item:first-of-type { margin-top:0; }
+    .item-main { min-width:0; }
+    .item-main strong { color:#223b58; font-size:14px; }
+    .item-main .sub { color:#506681; font-size:12px; margin:3px 0; }
+    .item-main .desc { color:#4b5d73; font-size:12px; margin:6px 0 0; white-space:pre-line; line-height:1.7; }
+    .item-date { font-size:11px; color:#8796a8; text-align:right; min-width:95px; flex-shrink:0; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .chip { padding:6px 11px; background:#ecf3fc; color:#29578f; border-radius:100px; font-size:12px; font-weight:650; }
+    .status-chip { display:inline-block; padding:2px 7px; border-radius:6px; background:#f1f5fa; font-size:11px; color:#63758c; margin-left:5px; }
+    .project-box { border:1px solid #dce7f3; border-radius:10px; padding:15px; margin-bottom:11px; break-inside:avoid; }
+    .project-box strong { display:block; color:var(--navy); font-size:14px; }
+    .project-meta { font-size:11px; color:#70839b; margin:4px 0 6px; }
+    .project-box p { font-size:12px; line-height:1.75; color:#52647b; white-space:pre-line; margin:6px 0; }
+    .video-list { display:grid; gap:10px; }
+    .video-item { background:#f2f6fb; border-radius:9px; padding:12px; font-size:12px; }
+    .video-item strong { display:block; color:var(--navy); }
+    .video-item p { margin:4px 0; color:var(--muted); }
+    .footnote { margin:35px 0 0; border-top:1px solid var(--line); padding-top:12px; color:#94a1b0; font-size:10px; }
+    .placeholder { color:#a6b3c1; font-style:italic; }
+    .mobile-tabs { display:none; }
+    .message { position:fixed; z-index:10; bottom:23px; left:50%; transform:translateX(-50%); color:white; background:var(--navy); padding:11px 18px; border-radius:10px; box-shadow:0 8px 22px #0002; font-size:13px; max-width:min(90vw,500px); text-align:center; display:none; }
+    .message.show { display:block; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    @media (max-width:1050px) {
+      .layout { grid-template-columns:minmax(315px,410px) minmax(0,1fr); gap:14px; padding:16px; }
+      .resume { padding:30px; min-height:800px; }
+      .preview-shell { padding:12px; }
+      .person-name { font-size:29px; }
+    }
+    @media (max-width:760px) {
+      .topbar { padding:15px; }
+      .toolbar { width:100%; }
+      .toolbar .btn { flex:1; }
+      .layout { display:block; padding:12px; }
+      .mobile-tabs { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+      .mobile-tabs button { border:1px solid var(--line); padding:12px; border-radius:9px; background:#fff; font-weight:750; color:var(--navy); }
+      .mobile-tabs button.active { background:var(--navy); color:white; }
+      .panel { display:none; }
+      .panel.active { display:block; }
+      .editor-body,.preview-shell { max-height:none; }
+      .preview-panel { position:static; }
+      .resume { min-height:0; padding:25px 21px 36px; }
+      .resume-cover { gap:15px; }
+      .portrait { width:95px; height:120px; }
+      .person-name { font-size:26px; }
+      .person-role { font-size:14px; }
+      .tagline { font-size:11px; }
+      .item-date { min-width:70px; }
+    }
+    @media (max-width:400px) { .two { grid-template-columns:1fr; } .toolbar .btn { font-size:12px; padding:8px; } .resume-cover { align-items:flex-start; } .portrait { width:78px; height:98px; } .person-name { font-size:22px; } }
+    @media print {
+      @page { size:A4; margin:13mm; }
+      body { background:#fff; }
+      .topbar,.mobile-tabs,.editor-panel,.preview-panel > .panel-head,.footnote,.message { display:none!important; }
+      .layout,.preview-panel,.preview-shell,.resume { display:block!important; padding:0!important; margin:0!important; width:100%!important; max-width:none!important; border:0!important; border-radius:0!important; box-shadow:none!important; overflow:visible!important; max-height:none!important; min-height:0!important; position:static!important; background:#fff!important; }
+      .resume-section { break-inside:auto; }
+      .resume-item,.project-box { break-inside:avoid; }
+      a { color:var(--navy)!important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">PS</div><div><strong>PROFILE STUDIO</strong><small>취업을 위한 나만의 포트폴리오</small></div></div>
+    <div class="toolbar" aria-label="저장 및 파일 관리">
+      <button class="btn ghost" id="loadBtn" type="button">저장본 불러오기</button>
+      <button class="btn ghost" id="exportBtn" type="button">JSON 백업</button>
+      <button class="btn ghost" id="importBtn" type="button">JSON 복원</button>
+      <button class="btn ghost" id="printBtn" type="button">인쇄 / PDF</button>
+      <button class="btn primary" id="saveBtn" type="button">저장하기</button>
+    </div>
+  </header>
+  <main class="layout">
+    <div class="mobile-tabs" aria-label="화면 선택">
+      <button type="button" data-tab="edit" class="active">✎ 프로필 편집</button>
+      <button type="button" data-tab="preview">▤ 실시간 미리보기</button>
+    </div>
+    <section class="panel editor-panel active" id="editorPanel" aria-label="프로필 편집">
+      <div class="panel-head"><div><h2>프로필 편집</h2><p>수정하면 오른쪽 미리보기에 즉시 반영됩니다.</p></div><button class="btn small danger" id="clearBtn" type="button">전체 비우기</button></div>
+      <div class="editor-body" id="editorBody">
+        <section class="form-section">
+          <div class="section-title"><h3>01 · 기본 정보</h3><span>사진 · 연락처</span></div>
+          <div class="photo-tools">
+            <div class="photo-thumb" id="photoThumb">사진 없음</div>
+            <div class="photo-actions">
+              <label class="btn small" for="photoInput">사진 업로드</label>
+              <input class="sr-only" type="file" id="photoInput" accept="image/*">
+              <button class="btn small danger" type="button" id="photoRemove">사진 삭제</button>
+              <span class="hint">사진은 자동 축소하여 브라우저에 저장합니다.</span>
+            </div>
+          </div>
+          <div class="fields">
+            <div class="two">
+              <label class="field">이름<input data-field="name" type="text" placeholder="이름"></label>
+              <label class="field">희망 직무<input data-field="role" type="text" placeholder="행사 기획·운영"></label>
+            </div>
+            <label class="field">한 줄 소개<input data-field="tagline" type="text" placeholder="나를 표현하는 짧은 문장"></label>
+            <div class="two">
+              <label class="field">희망 근무 지역<input data-field="location" type="text" placeholder="서울 · 경기"></label>
+              <label class="field">이메일<input data-field="email" type="email" placeholder="name@example.com"></label>
+            </div>
+            <div class="two">
+              <label class="field">연락처<input data-field="phone" type="tel" placeholder="010-0000-0000"></label>
+              <label class="field">포트폴리오 웹주소<input data-field="website" type="url" placeholder="https://"></label>
+            </div>
+            <label class="field">추가 링크 (LinkedIn 등)<input data-field="extraUrl" type="url" placeholder="https://"></label>
+          </div>
+        </section>
+        <section class="form-section">
+          <div class="section-title"><h3>02 · 자기소개</h3></div>
+          <div class="fields">
+            <label class="field">소개 글<textarea data-field="summary" rows="6" placeholder="나의 업무 경험과 지원 동기를 입력하세요."></textarea></label>
+            <label class="field">핵심 역량 / 성과 (한 줄에 하나씩)<textarea data-field="highlights" rows="4" placeholder="예: 협력사 일정 및 현장 조율"></textarea></label>
+            <label class="field">보유 기술 (쉼표로 구분)<textarea data-field="skills" rows="3" placeholder="Excel, PowerPoint, 행사 운영, 영어"></textarea></label>
+          </div>
+        </section>
+        <section class="form-section" id="schoolSection"><div class="section-title"><h3>03 · 학력</h3><button class="btn small" data-add="education" type="button">+ 학력 추가</button></div><div data-list="education"></div></section>
+        <section class="form-section"><div class="section-title"><h3>04 · 경력</h3><button class="btn small" data-add="experience" type="button">+ 경력 추가</button></div><div data-list="experience"></div></section>
+        <section class="form-section"><div class="section-title"><h3>05 · 자격증 / 교육</h3><button class="btn small" data-add="certificates" type="button">+ 자격 추가</button></div><div data-list="certificates"></div><p class="hint">취득 전이라면 상태에 '준비 중' 또는 '수강 중'을 입력하세요.</p></section>
+        <section class="form-section"><div class="section-title"><h3>06 · 프로젝트 / 포트폴리오</h3><button class="btn small" data-add="projects" type="button">+ 프로젝트 추가</button></div><div data-list="projects"></div><p class="hint">실무 프로젝트와 교육 실습을 명확히 구분해 작성하세요.</p></section>
+        <section class="form-section"><div class="section-title"><h3>07 · 영상 링크</h3><button class="btn small" data-add="videos" type="button">+ 영상 추가</button></div><div data-list="videos"></div><p class="hint">YouTube, Vimeo 등의 공개 링크를 입력할 수 있습니다. 인터넷 없이도 링크는 보이지만 영상 재생에는 연결이 필요합니다.</p></section>
+      </div>
+    </section>
+    <section class="panel preview-panel" id="previewPanel" aria-label="포트폴리오 미리보기">
+      <div class="panel-head"><div><h2>실시간 미리보기</h2><p>인쇄 / PDF 버튼으로 제출용 문서를 만들 수 있습니다.</p></div><span id="saveStatus" class="hint" role="status">저장 상태 확인 중</span></div>
+      <div class="preview-shell"><article class="resume" id="resume"></article></div>
+    </section>
+  </main>
+  <input class="sr-only" type="file" id="jsonInput" accept=".json,application/json">
+  <div class="message" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    "use strict";
+    const STORAGE_KEY = "profile-studio-v1";
+    const starter = {
+      name:"나지수", role:"MICE · 이벤트 기획 및 운영", tagline:"여행업 실무 경험을 행사 기획·운영 역량으로 연결합니다.",
+      location:"서울 · 경기", email:"", phone:"", website:"", extraUrl:"", photo:"",
+      summary:"여행업에서 상품 기획·운영과 호텔 수배, 협력사 소통 업무를 경험했습니다. 이 과정에서 쌓은 일정 관리와 현장 대응 역량을 바탕으로 MICE·전시·이벤트 분야에서 참가자 중심의 행사를 기획하고 운영하고자 합니다.",
+      highlights:"여행상품 기획·운영 및 협력사 커뮤니케이션\n다수 일정 및 현장 업무 조율 경험\n컨벤션·이벤트 기획안과 운영 프로세스 학습",
+      skills:"행사 운영, 행사 기획, 협력사 커뮤니케이션, 일정 관리, PowerPoint, Excel, 영어",
+      education:[{school:"상지대학교",major:"영어·관광경영 복수전공",period:"",detail:""}],
+      experience:[{company:"여행업 · 대만 랜드사",position:"상품기획 · 운영 · 영업",period:"1년 1개월",detail:"여행상품 기획·운영, 호텔 수배 및 거래처 커뮤니케이션"}],
+      certificates:[{name:"컨벤션기획사 2급",issuer:"과정평가형",date:"",status:"취득 준비 중"}],
+      projects:[{title:"국제행사 운영 기획 실습",category:"교육 실습",period:"2026",description:"행사 개요, 등록, 홍보, VIP 의전, 위기관리 등 행사 운영계획을 구성한 실습 프로젝트",url:""}],
+      videos:[]
+    };
+    const blank = () => ({name:"",role:"",tagline:"",location:"",email:"",phone:"",website:"",extraUrl:"",photo:"",summary:"",highlights:"",skills:"",education:[],experience:[],certificates:[],projects:[],videos:[]});
+    const structure = {
+      education:[{key:"school",label:"학교 / 교육기관",placeholder:"학교명"},{key:"major",label:"전공 / 학과",placeholder:"전공명"},{key:"period",label:"기간",placeholder:"2020.03 ~ 2024.02"},{key:"detail",label:"세부 내용",placeholder:"관련 학습·활동",multiline:true}],
+      experience:[{key:"company",label:"회사 / 기관",placeholder:"회사명"},{key:"position",label:"담당 직무",placeholder:"직무명"},{key:"period",label:"재직 기간",placeholder:"2024.01 ~ 2025.02"},{key:"detail",label:"주요 업무와 성과",placeholder:"담당 업무·성과를 구체적으로",multiline:true}],
+      certificates:[{key:"name",label:"자격증 / 교육명",placeholder:"자격명"},{key:"issuer",label:"발급 / 교육 기관",placeholder:"기관명"},{key:"date",label:"취득 / 교육 시기",placeholder:"2026.11"},{key:"status",label:"상태",placeholder:"취득 / 수강 중 / 준비 중"}],
+      projects:[{key:"title",label:"프로젝트명",placeholder:"프로젝트명"},{key:"category",label:"구분 / 담당 역할",placeholder:"실무 / 교육 실습 / 현장 운영"},{key:"period",label:"진행 시기",placeholder:"2026.10"},{key:"description",label:"주요 내용 / 성과",placeholder:"기획 목적·역할·성과",multiline:true},{key:"url",label:"자료 링크",placeholder:"https://"}],
+      videos:[{key:"title",label:"영상 제목",placeholder:"영상 제목"},{key:"url",label:"영상 URL",placeholder:"https://www.youtube.com/..."},{key:"description",label:"영상 설명",placeholder:"나의 역할과 영상 내용",multiline:true}]
+    };
+    function cleanData(raw) {
+      const result = blank();
+      if (!raw || typeof raw !== "object" || Array.isArray(raw)) return result;
+      for (const key of Object.keys(result)) {
+        if (Array.isArray(result[key])) {
+          result[key] = Array.isArray(raw[key]) ? raw[key].slice(0,100).map(item => {
+            const entry = {};
+            for (const f of structure[key]) entry[f.key] = typeof item?.[f.key] === "string" ? item[f.key].slice(0,10000) : "";
+            return entry;
+          }) : [];
+        } else result[key] = typeof raw[key] === "string" ? raw[key].slice(0,key === "photo" ? 1500000 : 30000) : "";
+      }
+      if (result.photo && !/^data:image\/(png|jpeg|webp);base64,/i.test(result.photo)) result.photo = "";
+      return result;
+    }
+    let data;
+    try { const saved = localStorage.getItem(STORAGE_KEY); data = saved ? cleanData(JSON.parse(saved)) : structuredClone(starter); }
+    catch { data = JSON.parse(JSON.stringify(starter)); }
+    let dirty = false;
+    let saveTimer;
+    let toastTimer;
+    const $ = (sel,root=document) => root.querySelector(sel);
+    const $$ = (sel,root=document) => [...root.querySelectorAll(sel)];
+    function el(tag,className,textValue) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (textValue !== undefined && textValue !== null) node.textContent = String(textValue);
+      return node;
+    }
+    function validWebUrl(value) {
+      try { const u = new URL(value); return ["https:","http:"].includes(u.protocol) ? u.href : ""; }
+      catch { return ""; }
+    }
+    function notify(message) {
+      const target = $("#toast"); target.textContent = message; target.classList.add("show");
+      clearTimeout(toastTimer); toastTimer = setTimeout(() => target.classList.remove("show"),3300);
+    }
+    function status(message) { $("#saveStatus").textContent = message; }
+    function save(silent=false) {
+      try {
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+        dirty = false; status("저장됨 · 이 브라우저");
+        if (!silent) notify("이 브라우저에 저장했습니다.");
+        return true;
+      } catch (err) {
+        dirty = true; status("저장 실패 · JSON 백업 권장");
+        notify("저장 공간이 부족하거나 저장이 차단되었습니다. JSON 백업을 이용하세요.");
+        return false;
+      }
+    }
+    function scheduleSave() {
+      dirty = true; status("편집 중 · 자동 저장 대기");
+      clearTimeout(saveTimer); saveTimer = setTimeout(() => save(true),650);
+    }
+    function renderStaticFields() { $$('[data-field]').forEach(node => { node.value = data[node.dataset.field] || ""; }); }
+    function renderPhoto() {
+      const box = $("#photoThumb"); box.replaceChildren();
+      if (data.photo) { const pic = el("img"); pic.src = data.photo; pic.alt = "업로드한 프로필 사진"; box.append(pic); }
+      else box.textContent = "사진 없음";
+    }
+    function renderLists() {
+      for (const [type,fields] of Object.entries(structure)) {
+        const target = document.querySelector('[data-list="'+type+'"]'); target.replaceChildren();
+        if (!data[type].length) target.append(el("p","empty-editor","추가된 항목이 없습니다. 위의 추가 버튼을 눌러주세요."));
+        data[type].forEach((item,index) => {
+          const card = el("div","entry");
+          const head = el("div","entry-head"); head.append(el("strong","",`${index+1}번째 항목`));
+          const actions = el("div","entry-actions");
+          for (const [cmd,title] of [["up","↑"],["down","↓"],["remove","삭제"]]) {
+            const btn = el("button","btn small"+(cmd === "remove" ? " danger" : ""),title);
+            btn.type = "button"; btn.dataset.action = cmd; btn.dataset.type = type; btn.dataset.index = String(index);
+            btn.setAttribute("aria-label",`${type} ${index+1}번째 항목 ${cmd}`);
+            if ((cmd === "up" && index === 0) || (cmd === "down" && index === data[type].length-1)) btn.disabled = true;
+            actions.append(btn);
+          }
+          head.append(actions); card.append(head);
+          const fieldBox = el("div","fields");
+          fields.forEach(field => {
+            const label = el("label","field",field.label);
+            const input = document.createElement(field.multiline ? "textarea" : "input");
+            if (field.multiline) input.rows = 3;
+            else input.type = "text";
+            input.value = item[field.key] || "";
+            input.placeholder = field.placeholder; input.dataset.type = type; input.dataset.index = String(index); input.dataset.key = field.key;
+            label.append(input); fieldBox.append(label);
+          });
+          card.append(fieldBox); target.append(card);
+        });
+      }
+    }
+    function createSection(parent,title) {
+      const section = el("section","resume-section"); section.append(el("h3","",title)); parent.append(section); return section;
+    }
+    function addText(parent,tag,content,className="") { parent.append(el(tag,className,content)); }
+    function addSafeLink(parent,url,label) {
+      const safe = validWebUrl(url); if (!safe) return;
+      const a = el("a","",label); a.href = safe; a.target = "_blank"; a.rel = "noopener noreferrer"; parent.append(a);
+    }
+    function nonempty(item) { return Object.values(item).some(v => typeof v === "string" && v.trim()); }
+    function renderPreview() {
+      const root = $("#resume"); root.replaceChildren();
+      const header = el("header","resume-cover"); const intro = el("div");
+      addText(intro,"p","CAREER PORTFOLIO","eyebrow");
+      addText(intro,"h1",data.name.trim() || "이름을 입력하세요","person-name"+(data.name.trim() ? "" : " placeholder"));
+      addText(intro,"p",data.role.trim() || "희망 직무","person-role"+(data.role.trim() ? "" : " placeholder"));
+      if (data.tagline.trim()) addText(intro,"p",data.tagline,"tagline");
+      header.append(intro);
+      const picBox = el("div","portrait");
+      if (data.photo) { const pic = el("img"); pic.src = data.photo; pic.alt = "프로필 사진"; picBox.append(pic); }
+      else picBox.textContent = "PROFILE PHOTO";
+      header.append(picBox); root.append(header);
+      const contact = el("div","contact-line");
+      if (data.location.trim()) addText(contact,"span","⌖ "+data.location);
+      if (data.email.trim()) { const a = el("a","",data.email); a.href = "mailto:"+encodeURIComponent(data.email.trim()); contact.append(a); }
+      if (data.phone.trim()) addText(contact,"span",data.phone);
+      addSafeLink(contact,data.website,"포트폴리오 링크"); addSafeLink(contact,data.extraUrl,"추가 링크");
+      if (contact.childNodes.length) root.append(contact);
+      if (data.summary.trim()) { const s = createSection(root,"ABOUT ME"); addText(s,"p",data.summary,"summary-text"); }
+      const highlights = data.highlights.split("\n").map(s=>s.trim()).filter(Boolean);
+      if (highlights.length) { const s=createSection(root,"KEY STRENGTHS"); const ul=el("ul","bullet-lines"); highlights.forEach(v=>addText(ul,"li",v)); s.append(ul); }
+      const skills = data.skills.split(/[,，\n]/).map(s=>s.trim()).filter(Boolean);
+      if (skills.length) { const s=createSection(root,"SKILLS"); const group=el("div","chips"); skills.forEach(v=>addText(group,"span",v,"chip")); s.append(group); }
+      const exp = data.experience.filter(nonempty);
+      if (exp.length) { const s=createSection(root,"EXPERIENCE"); exp.forEach(item => addResumeItem(s,item.company,item.position,item.period,item.detail)); }
+      const edu = data.education.filter(nonempty);
+      if (edu.length) { const s=createSection(root,"EDUCATION"); edu.forEach(item => addResumeItem(s,item.school,item.major,item.period,item.detail)); }
+      const certs = data.certificates.filter(nonempty);
+      if (certs.length) { const s=createSection(root,"CERTIFICATES & TRAINING"); certs.forEach(item => {
+        const line = el("div","resume-item"); const main=el("div","item-main");
+        addText(main,"strong",item.name || "자격 / 교육");
+        if (item.status) addText(main,"span",item.status,"status-chip");
+        if (item.issuer) addText(main,"div",item.issuer,"sub");
+        line.append(main); addText(line,"span",item.date,"item-date"); s.append(line);
+      }); }
+      const projects = data.projects.filter(nonempty);
+      if (projects.length) { const s=createSection(root,"PROJECTS"); projects.forEach(item => {
+        const box=el("div","project-box"); addText(box,"strong",item.title || "프로젝트");
+        const meta=[item.category,item.period].filter(Boolean).join("  ·  ");
+        if (meta) addText(box,"div",meta,"project-meta");
+        if (item.description) addText(box,"p",item.description);
+        addSafeLink(box,item.url,"프로젝트 자료 보기"); s.append(box);
+      }); }
+      const videos=data.videos.filter(nonempty);
+      if (videos.length) { const s=createSection(root,"VIDEOS"); const list=el("div","video-list"); videos.forEach(item=>{
+        const box=el("div","video-item"); addText(box,"strong",item.title || "영상");
+        if (item.description) addText(box,"p",item.description);
+        addSafeLink(box,item.url,"영상 링크 열기"); list.append(box);
+      }); s.append(list); }
+      addText(root,"p","본 문서는 Profile Studio에서 직접 작성한 프로필입니다.","footnote");
+    }
+    function addResumeItem(parent,title,subtitle,period,description) {
+      const line=el("div","resume-item"); const main=el("div","item-main");
+      addText(main,"strong",title || "기관명");
+      if (subtitle) addText(main,"div",subtitle,"sub");
+      if (description) addText(main,"p",description,"desc");
+      line.append(main); if (period) addText(line,"span",period,"item-date"); parent.append(line);
+    }
+    function renderAll() { renderStaticFields(); renderPhoto(); renderLists(); renderPreview(); }
+    document.addEventListener("input",event => {
+      const target=event.target;
+      if (target.matches("[data-field]")) { data[target.dataset.field]=target.value; renderPreview(); scheduleSave(); }
+      else if (target.matches("[data-type][data-key]")) {
+        const {type,index,key}=target.dataset;
+        if (data[type]?.[Number(index)]) { data[type][Number(index)][key]=target.value; renderPreview(); scheduleSave(); }
+      }
+    });
+    document.addEventListener("click",event=>{
+      const add=event.target.closest("[data-add]");
+      if (add) { const type=add.dataset.add; data[type].push(Object.fromEntries(structure[type].map(f=>[f.key,""]))); renderLists(); renderPreview(); scheduleSave(); return; }
+      const act=event.target.closest("[data-action]");
+      if (act) {
+        const {action,type,index}=act.dataset, i=Number(index), list=data[type];
+        if (action==="remove") list.splice(i,1);
+        if (action==="up" && i>0) [list[i-1],list[i]]=[list[i],list[i-1]];
+        if (action==="down" && i<list.length-1) [list[i+1],list[i]]=[list[i],list[i+1]];
+        renderLists(); renderPreview(); scheduleSave();
+      }
+    });
+    $("#photoInput").addEventListener("change",event=>{
+      const file=event.target.files?.[0]; if (!file) return;
+      if (!file.type.startsWith("image/")) { notify("이미지 파일을 선택하세요."); return; }
+      if (file.size > 10*1024*1024) { notify("10MB 이하 이미지를 선택하세요."); return; }
+      const reader=new FileReader();
+      reader.onload=()=>{
+        const img=new Image();
+        img.onload=()=>{
+          const max=720, ratio=Math.min(1,max/Math.max(img.width,img.height));
+          const canvas=document.createElement("canvas");
+          canvas.width=Math.round(img.width*ratio); canvas.height=Math.round(img.height*ratio);
+          const ctx=canvas.getContext("2d");
+          ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,canvas.width,canvas.height);
+          data.photo=canvas.toDataURL("image/jpeg",.78);
+          renderPhoto(); renderPreview(); scheduleSave(); notify("프로필 사진을 적용했습니다.");
+        };
+        img.onerror=()=>notify("이미지를 열 수 없습니다.");
+        img.src=String(reader.result);
+      };
+      reader.onerror=()=>notify("파일 읽기에 실패했습니다.");
+      reader.readAsDataURL(file); event.target.value="";
+    });
+    $("#photoRemove").addEventListener("click",()=>{ data.photo=""; renderPhoto(); renderPreview(); scheduleSave(); });
+    $("#saveBtn").addEventListener("click",()=>{ clearTimeout(saveTimer); save(); });
+    $("#loadBtn").addEventListener("click",()=>{
+      if (dirty && !confirm("저장된 내용으로 현재 편집 내용을 덮어쓸까요?")) return;
+      try { const saved=localStorage.getItem(STORAGE_KEY); if (!saved) return notify("저장된 프로필이 없습니다."); data=cleanData(JSON.parse(saved)); dirty=false; renderAll(); status("저장본 불러옴"); notify("저장된 프로필을 불러왔습니다."); }
+      catch { notify("저장된 데이터를 불러올 수 없습니다."); }
+    });
+    function downloadText(filename,text,contentType) {
+      const blob=new Blob([text],{type:contentType}); const url=URL.createObjectURL(blob);
+      const a=document.createElement("a"); a.href=url; a.download=filename; document.body.append(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }
+    $("#exportBtn").addEventListener("click",()=>{
+      const filename="profile-backup-"+new Date().toISOString().slice(0,10)+".json";
+      downloadText(filename,JSON.stringify({version:1,exportedAt:new Date().toISOString(),profile:data},null,2),"application/json;charset=utf-8");
+      notify("JSON 백업 파일을 내려받았습니다.");
+    });
+    $("#importBtn").addEventListener("click",()=>$("#jsonInput").click());
+    $("#jsonInput").addEventListener("change",event=>{
+      const file=event.target.files?.[0]; if (!file) return;
+      if (file.size>5*1024*1024) { notify("5MB 이하 JSON 파일을 선택하세요."); event.target.value=""; return; }
+      const reader=new FileReader();
+      reader.onload=()=>{
+        try {
+          const decoded=JSON.parse(String(reader.result));
+          const raw=decoded.profile ?? decoded;
+          if (!raw || typeof raw!=="object" || Array.isArray(raw) || !("name" in raw || "education" in raw || "summary" in raw)) throw Error("프로필 형식이 아닙니다.");
+          if (!confirm("현재 내용을 JSON 백업으로 교체할까요?")) return;
+          clearTimeout(saveTimer); data=cleanData(raw); renderAll(); save(true); notify("JSON 프로필을 복원했습니다.");
+        } catch { notify("올바른 프로필 JSON 파일이 아닙니다."); }
+      };
+      reader.onerror=()=>notify("JSON 파일 읽기에 실패했습니다.");
+      reader.readAsText(file,"UTF-8"); event.target.value="";
+    });
+    $("#clearBtn").addEventListener("click",()=>{
+      if (!confirm("모든 입력 내용을 비울까요? 저장된 내용도 다음 자동 저장 때 교체됩니다. 먼저 JSON 백업을 권장합니다.")) return;
+      clearTimeout(saveTimer); data=blank(); renderAll(); save(); notify("빈 프로필로 초기화했습니다.");
+    });
+    $("#printBtn").addEventListener("click",()=>window.print());
+    $$('[data-tab]').forEach(button=>button.addEventListener("click",()=>{
+      const tab=button.dataset.tab;
+      $$('[data-tab]').forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+      $("#editorPanel").classList.toggle("active",tab==="edit");
+      $("#previewPanel").classList.toggle("active",tab==="preview");
+      window.scrollTo({top:0,behavior:"smooth"});
+    }));
+    renderAll();
+    try { status(localStorage.getItem(STORAGE_KEY) ? "저장본 자동 불러옴" : "예시 프로필 · 수정 가능"); }
+    catch { status("저장 기능 제한 · JSON 백업 사용"); }
+  </script>
+</body>
+</html>
